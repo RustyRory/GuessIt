@@ -59,6 +59,21 @@ function addPoint(player) {
   }
 }
 
+// Sub point
+function subPoint(player) {
+  if (player === 1) score1--;
+  if (player === 2) score2--;
+
+  // --- Condition ---
+  if (score1 === -1) {
+    score1 = 0; // Prevent negative score
+  } else if (score2 === -1) {
+    score2 = 0; // Prevent negative score
+  }
+  score1Display.textContent = score1;
+  score2Display.textContent = score2;
+}
+
 // Show reset confirmation modal
 function askReset() {
   modalReset.show();
