@@ -14,12 +14,16 @@ const modalReset = new bootstrap.Modal(document.getElementById("resetModal"));
 const modalWinner = new bootstrap.Modal(document.getElementById("winnerModal"));
 const modalPush = new bootstrap.Modal(document.getElementById("pushModal"));
 
-// Show name modal when page loads
+// Cooldown anti-spam buzz
+let buzzCooldown = false;
+const COOLDOWN_TIME = 1000;
+
+// --- Page load ---
 document.addEventListener("DOMContentLoaded", () => {
   modalPlayer.show();
 });
 
-// Validate player names and start game
+// --- Start game ---
 function startGame() {
   const p1 = document.getElementById("player1Name").value.trim();
   const p2 = document.getElementById("player2Name").value.trim();
@@ -32,7 +36,7 @@ function startGame() {
   player1Display.textContent = p1;
   player2Display.textContent = p2;
 
-  // 🔄 Mise à jour des noms des boutons Buzz
+  // Update buzz labels
   document.getElementById("player1BuzzLabel").textContent = p1;
   document.getElementById("player2BuzzLabel").textContent = p2;
 
@@ -47,7 +51,7 @@ function startGame() {
   score2Display.textContent = "0";
 }
 
-// Add point and check winner
+// --- Add point ---
 function addPoint(player) {
   if (player === 1) score1++;
   if (player === 2) score2++;
@@ -59,7 +63,7 @@ function addPoint(player) {
   if (score2 === 3) declareWinner(player2Display.textContent);
 }
 
-// Sub point
+// --- Sub point ---
 function subPoint(player) {
   if (player === 1) score1--;
   if (player === 2) score2--;
@@ -71,12 +75,11 @@ function subPoint(player) {
   score2Display.textContent = score2;
 }
 
-// Show reset confirmation modal
+// --- Reset ---
 function askReset() {
   modalReset.show();
 }
 
-// Reset scores
 function resetGame() {
   score1 = 0;
   score2 = 0;
@@ -87,6 +90,7 @@ function resetGame() {
   modalReset.hide();
 }
 
+// --- Winner ---
 function declareWinner(name) {
   document.getElementById("winnerName").textContent = name;
   modalWinner.show();
@@ -102,12 +106,30 @@ function newMatch() {
   modalPlayer.show();
 }
 
-// 🔔 Buzz button
+// --- Buzz (button or keyboard) ---
 function playerPressed(player) {
+  if (buzzCooldown) return;
+
+  buzzCooldown = true;
+
   const name =
     player === 1 ? player1Display.textContent : player2Display.textContent;
 
   document.getElementById("pressedPlayerName").textContent = name;
 
   modalPush.show();
+
+  setTimeout(() => {
+    buzzCooldown = false;
+  }, COOLDOWN_TIME);
 }
+
+// --- Keyboard Buzz ---
+document.addEventListener("keydown", function (event) {
+  if (event.target.tagName === "INPUT") return;
+
+  const key = event.key.toLowerCase();
+
+  if (key === "q") playerPressed(1);
+  if (key === "p") playerPressed(2);
+});
