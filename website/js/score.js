@@ -8,20 +8,23 @@ const player1Display = document.getElementById("player1Display");
 const player2Display = document.getElementById("player2Display");
 
 // --- Modals ---
+const modalTip = new bootstrap.Modal(document.getElementById("tipModal")); // Tip keyboard modal
 const modalPlayer = new bootstrap.Modal(document.getElementById("playerModal"));
 const modalStart = new bootstrap.Modal(document.getElementById("startModal"));
 const modalReset = new bootstrap.Modal(document.getElementById("resetModal"));
 const modalWinner = new bootstrap.Modal(document.getElementById("winnerModal"));
 const modalPush = new bootstrap.Modal(document.getElementById("pushModal"));
-const modalTip = new bootstrap.Modal(document.getElementById("tipModal")); // NEW modal
+
+// --- Buzz sound ---
+const buzzSound = new Audio("assets/sounds/buzz.mp3");
 
 // Cooldown anti-spam buzz
 let buzzCooldown = false;
 const COOLDOWN_TIME = 1000;
 
-// --- Page load ---
+// --- Page load: show tip modal first ---
 document.addEventListener("DOMContentLoaded", () => {
-  modalTip.show(); // Show keyboard tip first
+  modalTip.show();
 });
 
 // --- Continue after reading tip ---
@@ -119,6 +122,10 @@ function playerPressed(player) {
 
   buzzCooldown = true;
 
+  // Play buzz sound
+  buzzSound.currentTime = 0;
+  buzzSound.play();
+
   const name =
     player === 1 ? player1Display.textContent : player2Display.textContent;
 
@@ -133,7 +140,6 @@ function playerPressed(player) {
 
 // --- Keyboard Buzz ---
 document.addEventListener("keydown", function (event) {
-  // Do NOT trigger buzz if typing in input
   if (event.target.tagName === "INPUT") return;
 
   const key = event.key.toLowerCase();
